@@ -24,11 +24,18 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
+        // Buat entitas User
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        // Buat entitas Profile yang terkait
+        // $user->profile()->create([
+        //     'username' => $user->name,
+        //     // Tambahkan atribut lain dari profil jika ada
+        // ]);
 
         return response()->json(['message' => 'User successfully registered', 'user' => $user], 201);
     }
@@ -70,23 +77,23 @@ class AuthController extends Controller
     //     return response()->json(['token' => $token], 200);
     // }
     public function login(Request $request)
-{
-    $credentials = $request->only('email', 'password');
+    {
+        $credentials = $request->only('email', 'password');
 
-    if (Auth::attempt($credentials)) {
-        $user = Auth::user();
-        $profilePicture = $user->profile ? $user->profile->profile_picture : null;
-        $profilePictureUrl = $profilePicture ? asset('storage/profile_pictures/' . $profilePicture) : null;
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            $profilePicture = $user->profile ? $user->profile->profile_picture : null;
+            $profilePictureUrl = $profilePicture ? asset('storage/profile_pictures/' . $profilePicture) : null;
 
-        return response()->json([
-            'token' => $user->createToken('authToken')->accessToken,
-            'name' => $user->name,
-            'profile_picture' => $profilePictureUrl,
-        ]);
-    } else {
-        return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json([
+                'token' => $user->createToken('authToken')->accessToken,
+                'name' => $user->name,
+                'profile_picture' => $profilePictureUrl,
+            ]);
+        } else {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
     }
-}
 
     public function logout(Request $request)
     {
