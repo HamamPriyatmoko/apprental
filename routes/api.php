@@ -29,4 +29,8 @@ Route::post('admin/login', [AdminAuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/admin/logout', [AdminAuthController::class, 'logout']);
 
 // Rute untuk produk
-Route::get('/product', [ProductController::class, 'index']);
+Route::resource('product', ProductController::class)->only([
+    'index', 'show', 'store', 'update', 'destroy'
+]);
+Route::post('upload', [ProductController::class, 'upload']);
+Route::delete('/product/{id}', [ProductController::class, 'destroy']);
